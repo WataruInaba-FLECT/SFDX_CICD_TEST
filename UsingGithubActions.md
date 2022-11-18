@@ -73,3 +73,7 @@ jobs:
               # -x: マニフェストファイルのパス指定。-u: 対象の組織、ユーザーネームを指定する。
               run: node_modules/sfdx-cli/bin/run force:source:deploy --checkonly -x ./release/package.xml -u ${{secrets.SFDX_DEV_USER_NAME}}
 ```
+
+## 自動テストの流れ 
+Github Actions内でのスクラッチ組織作成は、以下を参考にする。<br
+https://github.com/forcedotcom/salesforcedx-actions
