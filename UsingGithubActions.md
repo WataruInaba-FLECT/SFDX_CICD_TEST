@@ -75,5 +75,4 @@ jobs:
 ```
 
 ## 自動テストの流れ 
-Github Actions内でのスクラッチ組織作成は、以下を参考にする。<br
-https://github.com/forcedotcom/salesforcedx-actions
+sandboxへのデプロイチェックで -l RunLocalTests  をつける。
