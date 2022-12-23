@@ -9,6 +9,7 @@ on:
       - develop
 jobs:
   build:
+    if : ${{!contains(github.event.pull_request.labels.name,'SkipTest'))}}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
