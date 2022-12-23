@@ -1,0 +1,46 @@
+name: "Salesforce Deploy Check"
+on:
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+    branches:
+      - develop
+jobs:
+  build:
+    if : ${{!contains(github.event.pull_request.labels.*.name,'SkipTest')}}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          ref: ${{github.head_ref}}
+
+      - uses: actions/setup-node@v1
+        with:
+          node-version: ">=16"
+          check-latest: true
+
+      - name: "Install Salesforce CLI"
+        run: |
+          npm install sfdx-cli
+          node_modules/sfdx-cli/bin/run --version
+          node_modules/sfdx-cli/bin/run plugins --core
+
+      - name: "Populate auth file with SFDX_URL secret"
+        shell: bash
+        run: "echo ${{secrets.SFDX_URL}} > SFDX_QA"
+
+      - name: "Authenticate against developer sandbox"
+        run: node_modules/sfdx-cli/bin/run force:auth:sfdxurl:store -f SFDX_QA -s -a LRQA
+
+      - name: "Convert metadata"
+      # sandboxからソースをメタデータ形式で取得し、releaseフォルダに格納する
+        run: |
+              mkdir ./release
+              node_modules/sfdx-cli/bin/run force:source:convert -d ./release
+
+      - name: "Deploy check"
+              # sandboxへのデプロイチェック。--checkonly：デプロイされたメタデータを検証し、すべての Apex テストを実行しますが、デプロイが org に保存されることはありません。
+              # -x: マニフェストファイルのパス指定。-u: 対象の組織、ユーザーネームを指定する。
+        run: node_modules/sfdx-cli/bin/run force:source:deploy --checkonly -x ./release/package.xml -u LRQA -l RunAllTestsInOrg

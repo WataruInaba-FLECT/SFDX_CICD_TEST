@@ -27,6 +27,7 @@ on:
 jobs:
     # ジョブへの一意の識別子の指定には、jobs.<job_id> を使います(ここではbuildと命名。)
     build:
+        if:
         # runs-on : ジョブを実行するマシンの種類を定義します。（対象はGitHub ホステッド ランナーより選択する。windows サーバー ,Linuxならubuntuのみ、あとはMacosが選択可能）
         runs-on: ubuntu-latest
         # ジョブには、ステップと呼ばれる一連のタスクが含まれています。ステップでは、コマンドの実行、セットアップタスクの実行、自分のリポジトリや公開リポジトリ、Dockerレジストリで公開されているアクションの実行が可能です。
@@ -75,5 +76,9 @@ jobs:
 ```
 
 ## 自動テストの流れ 
-Github Actions内でのスクラッチ組織作成は、以下を参考にする。<br
-https://github.com/forcedotcom/salesforcedx-actions
+sandboxへのデプロイチェックで -l RunLocalTests  をつける。
+-l 以降がテストレベル。テストが成功してもカバレッジ率が低いとデプロイエラーを起こす。<br>（エラー内容からは推測できない。）
+左記を参照（https://github.com/forcedotcom/cli/issues/1049　）
+
+## プルリクエストタイトルによる自動テスト回避手法
+jobs.<job_id>の直後の行にifステートメントを追加する。
